@@ -1,0 +1,47 @@
+version: "2"
+
+services:
+  homer:
+    image: b4bz/homer:latest
+    container_name: homer
+    volumes:
+      - "./volumes/homer:/www/assets"
+    restart: unless-stopped
+    ports:
+      - "9010:8080"
+  jupyter:
+    build: ./build/jupyter
+    image: my-jupyter
+    container_name: my-jupyter
+    hostname: work.mfs.eng.br
+    domainname: work.mfs.eng.br
+    volumes:
+      - "./notebooks:/home/jovyan/work"
+      - "./confs/jupyter:/home/jovyan/.jupyter"
+    networks:
+      jupyter-network:
+        aliases:
+          - work.mfs.eng.br
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      RESTARTABLE: "yes"
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+      - "40000:40000"
+      
+  #zeppelin:
+  #  build: ./build/zeppelin
+  #  image: my-zeppelin
+  #  container_name: my-zeppelin
+  #  volumes:
+  #    - "./notebooks:/opt/zeppelin/notebook"
+  #    - "./confs/zeppelin:/opt/zeppelin/conf"
+  #  ports:
+  #    - "9013:8080"
+  #  restart: unless-stopped
+
+networks:
+  jupyter-network:
+    external:
+      name: jupyter-network
